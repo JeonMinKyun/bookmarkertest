@@ -31,11 +31,11 @@ jobs:
           chmod +x mvnw 
           ./mvnw verify
 
-      # docker의 tty 명령어를 사용하기 위한 환경설정
+      # docker의 tty 명령어를 사용하기 위한 환경설정(Jib 으로 빌드함)
       - if: ${{ github.ref == 'refs/heads/main' }}
         name: Build and Publish Docker Image
         run: |
-          ./mvnw clean package jib:dockerBuild -DskipTests
+          ./mvnw clean package jib:dockerBuild -DskipTests  
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker build -t myimage:latest .
           docker tag myimage:latest ${{ secrets.DOCKER_USERNAME }}/bookmarker-api:latest

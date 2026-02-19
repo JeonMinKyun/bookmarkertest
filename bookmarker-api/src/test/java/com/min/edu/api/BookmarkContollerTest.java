@@ -1,5 +1,6 @@
 package com.min.edu.api;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -18,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.min.edu.domain.Bookmark;
@@ -70,6 +72,29 @@ class BookmarkContollerTest {
 				.andExpect(jsonPath("$.hasNext", CoreMatchers.equalTo(hasNext)))
 				.andExpect(jsonPath("$.hasPrevious", CoreMatchers.equalTo(hasPrevious)));
 
+	}
+	
+	@Test
+	public void shouldCreateBookmarkSuccessfully() throws Exception {
+		MvcResult result =this.mvc.perform(
+				MockMvcRequestBuilders.post("/api/bookmarks")
+		        		.contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+		                .content("""
+				                {
+			                    "title": "SivaLabs Blog"
+			                }
+			                """)
+		    )
+		    .andExpect(status().is4xxClientError())
+		    .andExpect(jsonPath("$.status", is(400))) // is는 정적임포트가 되어 있어야 한다. 아닌경우는 hancrest의 CoreMatchers.is()
+		    .andExpect(jsonPath("$.field", is("url")))
+		    .andExpect(jsonPath("$.message", is("URL은 필수 입력 값입니다")))
+		    .andReturn();
+		
+		String contentType = result.getResponse().getContentType();
+		System.out.println("Content Type: " + contentType);
+		String responseBody = result.getResponse().getContentAsString();
+		System.out.println("Response JSON: " + responseBody);
 	}
 
 }
