@@ -43,3 +43,45 @@ jobs:
         env: 
           DOCKER_BUILDKIT: 1
           DOCKER_CLI_EXPERIMENTAL: enabled
+
+  ########################################
+  # 2️⃣ bookmark-ui-nextjs 빌드 및 Docker 배포
+  ########################################
+  build-bookmarker-ui:
+    name: Build bookmarker-ui
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./bookmark-ui-nextjs
+    steps:
+      # 코드 체크아웃
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Node.js 설정
+      - name: Setup Node.js 20.9.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.9.0
+          
+      # 의존성 설치
+      - name: Install dependencies
+        run: npm ci
+        
+      # ✅ .env.local 파일 생성
+      - name: Create .env.local file
+        run: |
+          echo "NEXT_PUBLIC_CLIENT_SIDE_API_BASE_URL=${{ secrets.NEXT_PUBLIC_CLIENT_SIDE_API_BASE_URL }}" > .env.local
+          echo "SERVER_SIDE_API_BASE_URL=${{ secrets.SERVER_SIDE_API_BASE_URL }}" >> .env.local
+
+      # Next.js 빌드
+      - name: Build
+        run: npm run build
+
+      # 메인 브랜치일 경우 Docker 이미지 빌드 & 배포
+      - if: ${{ github.ref == 'refs/heads/main' }}
+        name: Build and Publish Docker Image
+        run: |
+          docker build -f Dockerfile.ui -t ${{ secrets.DOCKER_USERNAME }}/bookmark-ui-nextjs .
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/bookmark-ui-nextjs
