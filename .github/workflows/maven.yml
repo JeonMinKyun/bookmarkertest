@@ -110,5 +110,9 @@ jobs:
             
             kubectl apply -f /k8s/3-bookmarker-api.yaml
             kubectl apply -f /k8s/4-bookmarker-ui.yaml
+            
+            # Kubernetes Deployment 새로 고침 (이미지 업데이트 반영)
+            kubectl rollout restart deployment/bookmarker-api-deployment
+            kubectl rollout restart deployment/bookmarker-ui-deployment
 
             echo "===== Kubernetes Deploy Complete ====="
