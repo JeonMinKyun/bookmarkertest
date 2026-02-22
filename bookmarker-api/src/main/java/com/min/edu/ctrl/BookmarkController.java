@@ -39,9 +39,5 @@ public class BookmarkController {
 		return bookmarkService.createBookmark(request);
 	}
 	
-	@GetMapping("/test")
-	public String getTest() {
-		return "Git Action Test ";
-	}
 	
 }
