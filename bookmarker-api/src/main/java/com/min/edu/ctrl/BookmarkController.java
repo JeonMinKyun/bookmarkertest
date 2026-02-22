@@ -41,7 +41,7 @@ public class BookmarkController {
 	
 	@GetMapping("/test")
 	public String getTest() {
-		return "Git Action 나이스 ";
+		return "Git Action 나이스 ☆*: .｡. o(≧▽≦)o .｡.:*☆ ";
 	}
 	
 }
