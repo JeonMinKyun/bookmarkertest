@@ -38,4 +38,10 @@ public class BookmarkController {
 	public BookmarkDto createBookmark(@RequestBody @Valid CreateBookmarkRequest request) {
 		return bookmarkService.createBookmark(request);
 	}
+	
+	@GetMapping("/test")
+	public String getTest() {
+		return "Git Action Test ";
+	}
+	
 }
